@@ -1,0 +1,1 @@
+# stok_opt-mimizasyon_mlops_project
