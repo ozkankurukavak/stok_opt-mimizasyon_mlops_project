@@ -1,0 +1,26 @@
+COLUMNS:
+  InventoryId: object
+  Store: int64
+  Brand: int64
+  Description_sales: object
+  Size_sales: object
+  SalesQuantity: int64
+  SalesDollars: float64
+  SalesPrice: float64
+  SalesDate: object
+  Volume_sales: int64
+  Classification_sales: int64
+  ExciseTax: float64
+  VendorNo: int64
+  VendorName_sales: object
+  Description_purchase: object
+  Price: float64
+  Size_purchase: object
+  Volume_purchase: int64
+  Classification_purchase: int64
+  PurchasePrice: float64
+  VendorNumber: int64
+  VendorName_purchase: object
+
+TARGET_COLUMN:
+  name: SalesQuantity
