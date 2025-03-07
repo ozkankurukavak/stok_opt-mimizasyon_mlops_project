@@ -1,3 +1,6 @@
+## Burada olusturmak istediğimiz dosyaları olusturuyoruz.
+
+
 import os
 from pathlib import Path
 import logging
