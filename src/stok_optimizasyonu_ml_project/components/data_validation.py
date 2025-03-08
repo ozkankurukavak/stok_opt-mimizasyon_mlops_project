@@ -4,9 +4,6 @@ from src.stok_optimizasyonu_ml_project.entitiy.config_entitiy import DataValidat
 import pandas as pd
 from scipy.stats import zscore
 
-
-
-
 class DataValidation:
     def __init__(self, config: DataValidationConfig):
         self.config = config
@@ -41,63 +38,35 @@ class DataValidation:
                 validation_status = False
                 with open(self.config.STATUS_FILE, 'w') as f:
                     f.write(f"Validation status: {validation_status}, Missing Data: {missing_data}")
+                return validation_status  # Eksik veri bulunduğunda işlemi sonlandırıyoruz
             
-            # Aykırı Değer Analizi (Outlier Analysis)
-            outlier_data = self.outlier_analysis(data, threshold=1.5)  # Aykırı değer analizi
-            if outlier_data:
-                validation_status = False
-                with open(self.config.STATUS_FILE, 'w') as f:
-                    f.write(f"Validation status: {validation_status}, Outliers found: {outlier_data}")
-
-            # Z-Score Aykırı Değer Analizi
+            # Z-Score ile aykırı değer analizi (Status'u etkilemeden raporlama)
             outliers_dict = self.zscore_analysis_multi(data, columns=all_cols, threshold=3)  # Z-score ile aykırı değer analizi
-            if outliers_dict:
-                validation_status = False
-                with open(self.config.STATUS_FILE, 'w') as f:
-                    f.write(f"Validation status: {validation_status}, Z-score outliers: {outliers_dict}")
+            with open(self.config.STATUS_FILE, 'a') as f:
+                f.write(f"Outliers detected: {outliers_dict}\n")  # Aykırı değerleri raporluyoruz
 
-            # Validation durumu yazıyoruz
-            with open(self.config.STATUS_FILE, 'w') as f:
-                f.write(f"Validation status: {validation_status}")
-            
-            return validation_status  # Sonuç döndürülüyor
+            return validation_status  # Doğrulama başarılı ise True dönecek
+        
         except Exception as e:
-            raise e  # Hata durumunda istisna fırlatılır
+            validation_status = False
+            with open(self.config.STATUS_FILE, 'w') as f:
+                f.write(f"Validation status: {validation_status}, Error: {str(e)}")
+            return validation_status
 
-    # Aykırı değer tespiti (IQR - Interquartile Range) ile
-    def outlier_analysis(self, df, threshold=1.5):
-        outlier_data = {}
-        numerical_columns = df.select_dtypes(include=['int64', 'float64']).columns.tolist()  # Sayısal kolonları seçiyoruz
-
-        for column in numerical_columns:
-            Q1 = df[column].quantile(0.25)  # 1st quartile (Q1)
-            Q3 = df[column].quantile(0.75)  # 3rd quartile (Q3)
-            IQR = Q3 - Q1  # Interquartile Range (IQR)
-
-            lower_limit = Q1 - threshold * IQR  # Alt sınır
-            upper_limit = Q3 + threshold * IQR  # Üst sınır
-
-            # Aykırı değerleri tespit ediyoruz
-            outlier_mask = (df[column] < lower_limit) | (df[column] > upper_limit)
-            outlier_data[column] = {
-                "lower_limit": lower_limit,
-                "upper_limit": upper_limit,
-                "outlier_count": outlier_mask.sum(),  # Aykırı değerlerin sayısı
-                "percentage": round((outlier_mask.sum() / len(df)) * 100, 2)  # Yüzde oranı
-            }
-
-        return outlier_data  # Aykırı değerleri döndürüyoruz
-
-    # Z-score ile aykırı değer analizi (Sayısal kolonlar için)
-    def zscore_analysis_multi(self, df, columns, threshold=3):
+    def zscore_analysis_multi(self, df: pd.DataFrame, columns: list, threshold: float = 3):
         outliers_dict = {}
-
-        for column in columns:
-            df[f'{column}_zscore'] = zscore(df[column])  # Z-score hesaplama
-
-            # Z-score değeri belirli bir eşik değerini aşarsa aykırı değer olarak işaretliyoruz
-            outlier_mask = (df[f'{column}_zscore'] > threshold) | (df[f'{column}_zscore'] < -threshold)
-
-            outliers_dict[column] = df[outlier_mask]  # Aykırı değerleri kaydediyoruz
-
-        return outliers_dict  # Aykırı değerlerin bulunduğu dictionary döndürülüyor
+        
+        # Z-score analizi için yalnızca sayısal kolonları alıyoruz
+        numeric_columns = df.select_dtypes(include=['float64', 'int64']).columns
+        
+        # Z-score hesaplamak için sadece sayısal verilere odaklanıyoruz
+        for column in numeric_columns:
+            try:
+                df[f'{column}_zscore'] = zscore(df[column])  # Z-score hesaplama
+                outliers = df[df[f'{column}_zscore'].abs() > threshold]  # Z-Score threshold'unu geçenler
+                outliers_dict[column] = outliers
+            except Exception as e:
+                # Eğer hata oluşursa (örneğin bir sütunda yalnızca string değerler varsa), bu hatayı kaydet
+                outliers_dict[column] = f"Error in Z-score calculation: {str(e)}"
+        
+        return outliers_dict

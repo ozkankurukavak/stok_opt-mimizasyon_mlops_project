@@ -1,6 +1,6 @@
 from src.stok_optimizasyonu_ml_project.constants import *
 from src.stok_optimizasyonu_ml_project.utils.common import read_yaml,create_directories
-from src.stok_optimizasyonu_ml_project.entitiy.config_entitiy import (DataIngestionConfig,DataValidationConfig)
+from src.stok_optimizasyonu_ml_project.entitiy.config_entitiy import (DataIngestionConfig,DataValidationConfig,DataTransformationConfig)
 
 class ConfigurationManager:
     def __init__(self, config_filepath=CONFIG_FILE_PATH, params_filepath=PARAMS_FILE_PATH, schema_filepath = SCHEMA_FILE_PATH):
@@ -41,3 +41,21 @@ class ConfigurationManager:
         )
 
         return data_validation_config
+    
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        config = self.config.data_transformation
+
+        # Root directory için Path nesnesi oluşturuluyor
+        root_dir = Path(config.root_dir)
+        data_path = Path(config.data_path)
+        transformed_data_path = Path(config.transformed_data_path)  # Yeni eklenen kısım
+
+        create_directories([root_dir])
+
+        data_transformation_config = DataTransformationConfig(
+            root_dir=root_dir,
+            data_path=data_path,
+            transformed_data_path=transformed_data_path  # Yeni eklenen kısım
+    )
+
+        return data_transformation_config
