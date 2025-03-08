@@ -1,1 +1,0 @@
-artifacts/data_ingestion/satslar.csv filter=lfs diff=lfs merge=lfs -text
