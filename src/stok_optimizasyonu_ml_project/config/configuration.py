@@ -1,6 +1,6 @@
 from src.stok_optimizasyonu_ml_project.constants import *
 from src.stok_optimizasyonu_ml_project.utils.common import read_yaml,create_directories
-from src.stok_optimizasyonu_ml_project.entitiy.config_entitiy import (DataIngestionConfig,DataValidationConfig,DataTransformationConfig)
+from src.stok_optimizasyonu_ml_project.entitiy.config_entitiy import (DataIngestionConfig,DataValidationConfig,DataTransformationConfig,ModelTrainerConfig)
 
 class ConfigurationManager:
     def __init__(self, config_filepath=CONFIG_FILE_PATH, params_filepath=PARAMS_FILE_PATH, schema_filepath = SCHEMA_FILE_PATH):
@@ -12,6 +12,7 @@ class ConfigurationManager:
         create_directories([self.config.artifacts_root])
 
 
+    
     
     def get_data_ingestion_config(self) -> DataIngestionConfig: # Yukarida DataIngestionConfig sinifi icerisinde tanimlamis oldugum degiskenleri return edecektir
         config = self.config.data_ingestion # root_dir, local_data_file, source_URL, unzip_dir keylerine erisim sagliyorum
@@ -27,6 +28,9 @@ class ConfigurationManager:
 
         return data_ingestion_config
     
+    
+    
+    
     def get_data_validation_config(self) -> DataValidationConfig:
         config = self.config.data_validation
         schema = self.schema.COLUMNS
@@ -41,6 +45,9 @@ class ConfigurationManager:
         )
 
         return data_validation_config
+    
+    
+    
     
     def get_data_transformation_config(self) -> DataTransformationConfig:
         config = self.config.data_transformation
@@ -59,3 +66,25 @@ class ConfigurationManager:
     )
 
         return data_transformation_config
+    
+
+
+    def get_model_trainer_config(self) -> ModelTrainerConfig:
+        # Config, params ve schema'ya erişim sağlıyoruz
+        config = self.config.model_trainer
+        params = self.params.xgboost  # params.yaml'dan XGBoost parametreleri
+        schema = self.schema.TARGET_COLUMN  # target_column bilgisi schema.yaml'dan
+
+        # Train ve test dataset yolları artifacts altında olacak şekilde ayarlanmalı
+        create_directories([config.root_dir])
+
+        model_trainer_config = ModelTrainerConfig(
+            root_dir=config.root_dir,
+            train_data_path=config.train_data_path,
+            test_data_path=config.test_data_path,
+            model_name=config.model_name,
+            target_column=schema.name,  # Target sütunu
+            xgboost_params=params,  # XGBoost parametrelerini geçiyoruz
+        )
+        
+        return model_trainer_config

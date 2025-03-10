@@ -11,16 +11,23 @@ data_validation:
   unzip_data_dir: artifacts/data_ingestion/satslar.csv  # Zipten çıkarılan CSV dosyasının yolu
   STATUS_FILE: artifacts/data_validation/status.txt  # Doğrulama durumu hakkında bilgi
 
+
 data_transformation:
   root_dir: artifacts/data_transformation/
-  data_path: artifacts/data_ingestion/satslar.csv  # Doğru dosya yolunu belirledim
-  transformed_data_path: artifacts/data_transformation/transformed_data.csv  # Dönüştürülmüş veri için doğru yol
+  data_path: artifacts/data_ingestion/satslar.csv
+  transformed_data_path: artifacts/data_transformation/
+  train_data_path: artifacts/data_transformation/train_data.csv
+  test_data_path: artifacts/data_transformation/test_data.csv
+
 
 model_trainer:
-  root_dir: artifacts/model_trainer
-  train_data_path: artifacts/data_transformation/train.csv  # Eğitim verisinin kaydedileceği yol
-  test_data_path: artifacts/data_transformation/test.csv  # Test verisinin kaydedileceği yol
-  model_name: "xgboost"  # Kullanılacak model türü
-  model_save_path: artifacts/model_trainer/model.joblib  # Eğitilen modelin kaydedileceği yol
-  grid_search: True  # GridSearch uygulanacak mı?
-  scoring_metric: "neg_mean_squared_error"  # Değerlendirme metrikleri
+  root_dir: "artifacts/model_trainer"          # Modelin kaydedileceği dizin
+  train_data_path: "artifacts/data_transformation/train_data.csv"   # Eğitim verisi yolu
+  test_data_path: "artifacts/data_transformation/test_data.csv"     # Test verisi yolu
+  model_name: "xgboost_model.pkl"              # Modelin adı
+  model_save_path: "artifacts/model_trainer/models/"          # Modelin kaydedileceği dizin
+  grid_search: true                            # Grid search uygulanacak mı?
+  scoring_metric: "accuracy"                  # Skor metrici, doğruluk için "accuracy" kullanılabilir
+  test_size: 0.2                              # Test seti boyutu, genellikle 0.2 ya da 0.3 kullanılır
+  random_state: 42                            # Rastgelelikin kontrolü, sabit bir değer verilmesi iyi bir uygulamadır
+  target_column: "target"                     # Hedef değişkenin adı

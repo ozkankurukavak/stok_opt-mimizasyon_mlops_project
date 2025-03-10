@@ -1,5 +1,6 @@
 from pathlib import Path
 from dataclasses import dataclass
+from typing import Dict, Any
 
 @dataclass(frozen=True)
 class DataIngestionConfig:
@@ -24,8 +25,10 @@ class DataTransformationConfig:
     transformed_data_path: Path  # Yeni eklenen kısım
 
 
-@dataclass
 class ModelTrainerConfig:
     root_dir: Path
-    prep_data_path: Path
-    model_path: Path
+    train_data_path: Path
+    test_data_path: Path
+    model_name: str
+    target_column: str
+    xgboost_params: Dict[str, Any]
