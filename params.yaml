@@ -1,52 +1,23 @@
 xgboost:
-  n_estimators:
+  n_estimators:  # Ağaç sayısı, modelin kaç tane karar ağacı oluşturacağını belirler.
     - 100
     - 200
-    - 300
-    - 500
-    - 1000
-  max_depth:
+
+  max_depth:  # Her bir karar ağacının maksimum derinliği. Derinlik arttıkça model daha karmaşık olur.
     - 3
     - 5
     - 7
-    - 9
-    - 12
-    - 15
-  learning_rate:
+
+  learning_rate:  # Öğrenme oranı, her iterasyonda ağırlık güncellemesinin büyüklüğünü belirler. Küçük değerler daha yavaş öğrenmeyi sağlar.
     - 0.01
     - 0.05
     - 0.1
     - 0.2
-  subsample:
-    - 0.6
-    - 0.7
-    - 0.8
-    - 0.9
-    - 1.0
-  colsample_bytree:
-    - 0.6
-    - 0.7
-    - 0.8
-    - 0.9
-    - 1.0
-  gamma:
-    - 0
-    - 0.1
-    - 0.3
-    - 0.5
-    - 1
-  reg_alpha:
-    - 0
-    - 0.01
-    - 0.1
-    - 1
-    - 10
-  reg_lambda:
-    - 0
-    - 0.01
-    - 0.1
-    - 1
-    - 10
+
+  subsample:  # Her iterasyonda kullanılacak örnekleme oranı. Aşırı öğrenmeyi (overfitting) önlemek için kullanılır.
+    - 0.8  # %80 veri ile eğitim yap
+    - 0.10  # %10 veri ile eğitim yap (muhtemelen çok düşük ve öğrenme kötü olabilir)
+
   # Ekstra parametreler
-  objective: "reg:squarederror"  # Hedef fonksiyon (regresyon için yaygın)
-  booster: "gbtree"  # GBT kullanmak için
+  objective: "reg:squarederror"  # Hedef fonksiyon, burada regresyon problemi için kare hata kullanılıyor.
+  booster: "gbtree"  # Modelin hangi tür güçlendirme algoritmasını (booster) kullanacağını belirler. Burada karar ağaçları (GBT) kullanılıyor.

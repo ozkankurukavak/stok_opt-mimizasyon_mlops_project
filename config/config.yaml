@@ -25,7 +25,7 @@ model_trainer:
   train_data_path: "artifacts/data_transformation/train_data.csv"   # Eğitim verisi yolu
   test_data_path: "artifacts/data_transformation/test_data.csv"     # Test verisi yolu
   model_name: "xgboost_model.pkl"              # Modelin adı
-  model_save_path: "artifacts/model_trainer/models/"          # Modelin kaydedileceği dizin
+  model_save_path: "artifacts/model_trainer/"          # Modelin kaydedileceği dizin
   grid_search: true                            # Grid search uygulanacak mı?
   scoring_metric: "accuracy"                  # Skor metrici, doğruluk için "accuracy" kullanılabilir
   test_size: 0.2                              # Test seti boyutu, genellikle 0.2 ya da 0.3 kullanılır
