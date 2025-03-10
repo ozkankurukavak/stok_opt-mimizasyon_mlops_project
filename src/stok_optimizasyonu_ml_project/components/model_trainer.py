@@ -17,16 +17,20 @@ class ModelTrainer:
         train_data = pd.read_csv(self.config.train_data_path)
         test_data = pd.read_csv(self.config.test_data_path)
         
+        # Eğitim verisinden örnekleme yap
+        train_data_sample = train_data.sample(frac=0.1, random_state=42)  # Verinin %10'u ile eğitim
+        
         # X ve y'yi ayır
-        X_train = train_data.drop(self.config.target_column, axis=1)
-        y_train = train_data[self.config.target_column]
+        X_train = train_data_sample.drop(self.config.target_column, axis=1)
+        y_train = train_data_sample[self.config.target_column]
         X_test = test_data.drop(self.config.target_column, axis=1)
         y_test = test_data[self.config.target_column]
 
         # XGBoost modelini oluştur
         xgb_model = xgb.XGBRegressor(
             objective=self.config.xgboost_params['objective'],
-            booster=self.config.xgboost_params['booster']
+            booster=self.config.xgboost_params['booster'],
+            n_jobs = -1
         )
 
         # Parametre ızgarası
@@ -35,10 +39,6 @@ class ModelTrainer:
             'max_depth': self.config.xgboost_params['max_depth'],
             'learning_rate': self.config.xgboost_params['learning_rate'],
             'subsample': self.config.xgboost_params['subsample'],
-            'colsample_bytree': self.config.xgboost_params['colsample_bytree'],
-            'gamma': self.config.xgboost_params['gamma'],
-            'reg_alpha': self.config.xgboost_params['reg_alpha'],
-            'reg_lambda': self.config.xgboost_params['reg_lambda']
         }
 
         # GridSearchCV ile parametre araması yapalım
@@ -54,5 +54,4 @@ class ModelTrainer:
         print(f'Mean Squared Error: {mse}')
 
         # Modeli kaydet
-        joblib.dump(best_model, self.config.root_dir / self.config.model_name)
-
+        joblib.dump(best_model, os.path.join(self.config.model_save_path, self.config.model_name))
