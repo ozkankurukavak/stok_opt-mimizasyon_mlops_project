@@ -10,7 +10,6 @@ from src.stok_optimizasyonu_ml_project.entitiy.config_entitiy import ModelTraine
 class ModelTrainer:
     def __init__(self, config: ModelTrainerConfig):
         self.config = config
-        self.model = None
 
     def train(self):
         # Eğitim ve test verilerini yükle
@@ -27,11 +26,7 @@ class ModelTrainer:
         y_test = test_data[self.config.target_column]
 
         # XGBoost modelini oluştur
-        xgb_model = xgb.XGBRegressor(
-            objective=self.config.xgboost_params['objective'],
-            booster=self.config.xgboost_params['booster'],
-            n_jobs = -1
-        )
+        xgb_model = xgb.XGBRegressor(n_jobs = -1)
 
         # Parametre ızgarası
         param_grid = {
@@ -54,4 +49,4 @@ class ModelTrainer:
         print(f'Mean Squared Error: {mse}')
 
         # Modeli kaydet
-        joblib.dump(best_model, os.path.join(self.config.model_save_path, self.config.model_name))
+        joblib.dump(best_model, os.path.join(self.config.root_dir, self.config.model_name))

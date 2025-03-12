@@ -75,9 +75,10 @@ class ConfigurationManager:
         params = self.params.xgboost  # params.yaml'dan XGBoost parametreleri
         schema = self.schema.TARGET_COLUMN  # target_column bilgisi schema.yaml'dan
 
-        # Train ve test dataset yolları artifacts altında olacak şekilde ayarlanmalı
+        # Klasörlerin oluşturulması
         create_directories([config.root_dir])
 
+        # ModelTrainerConfig'i döndürüyoruz
         model_trainer_config = ModelTrainerConfig(
             root_dir=config.root_dir,
             train_data_path=config.train_data_path,

@@ -25,10 +25,15 @@ class DataTransformationConfig:
     transformed_data_path: Path  # Yeni eklenen kısım
 
 
+@dataclass
 class ModelTrainerConfig:
-    root_dir: Path
-    train_data_path: Path
-    test_data_path: Path
-    model_name: str
-    target_column: str
-    xgboost_params: Dict[str, Any]
+    root_dir: Path                          # Modelin kaydedileceği ana dizin
+    train_data_path: Path                    # Eğitim verisinin yolu
+    test_data_path: Path                     # Test verisinin yolu
+    model_name: str                          # Modelin adı (Örneğin: "xgboost_model.pkl")
+    target_column: str                       # Hedef değişkenin adı
+    xgboost_params: Dict[str, Any]           # XGBoost parametrelerini burada saklayacağız
+    grid_search: bool = True                 # Grid search uygulanacak mı?
+    scoring_metric: str = "accuracy"         # Skor metrici, doğruluk için "accuracy" kullanılabilir
+    test_size: float = 0.2                   # Test seti boyutu, genellikle 0.2 ya da 0.3 kullanılır
+    random_state: int = 42            

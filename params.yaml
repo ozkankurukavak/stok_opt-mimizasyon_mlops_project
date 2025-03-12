@@ -18,6 +18,4 @@ xgboost:
     - 0.8  # %80 veri ile eğitim yap
     - 0.10  # %10 veri ile eğitim yap (muhtemelen çok düşük ve öğrenme kötü olabilir)
 
-  # Ekstra parametreler
-  objective: "reg:squarederror"  # Hedef fonksiyon, burada regresyon problemi için kare hata kullanılıyor.
-  booster: "gbtree"  # Modelin hangi tür güçlendirme algoritmasını (booster) kullanacağını belirler. Burada karar ağaçları (GBT) kullanılıyor.
+  
