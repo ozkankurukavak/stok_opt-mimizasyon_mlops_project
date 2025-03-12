@@ -92,10 +92,14 @@ class DataTransformation:
             # Veriyi Pipeline üzerinden işle
             self.apply_pipeline(df)
 
-            # Adım 6: Veriyi Kaydet
-            self.save_data(df)  # İşlenmiş veriyi kaydet
+            # Adım 6: Veriyi Train ve Test olarak ayır
+            train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 
-            return df
+            # Train ve Test verilerini kaydet
+            self.save_data(train_df, 'train_data.csv')  # Eğitim verisi kaydet
+            self.save_data(test_df, 'test_data.csv')    # Test verisi kaydet
+
+            return df  # İşlenmiş veriyi döndür
 
         except Exception as e:
             # Hata durumunda hata mesajını fırlat
@@ -107,7 +111,6 @@ class DataTransformation:
         nominal_columns = ['InventoryId', 'Description_sales', 'VendorName_sales', 'Description_purchase', 'VendorName_purchase']
 
         # Pipeline setup
-        # Kategoriler her sütun için ayrı ayrı tanımlanmalı
         pipeline = Pipeline(steps=[
             ('impute_size_sales', SimpleImputer(strategy='median')),  # Eksik verileri median ile doldur
             ('ordinal_encoder_sales', OrdinalEncoder(categories=[sorted(df['Size_sales'].unique())])),  # Size_sales için Ordinal encoding
@@ -122,10 +125,10 @@ class DataTransformation:
         for col in nominal_columns:
             df[col] = LabelEncoder().fit_transform(df[col])
 
-    def save_data(self, df):
+    def save_data(self, df, filename):
         """
         İşlenmiş veriyi config.yaml'daki belirtilen yola kaydeder.
         """
-        output_path = self.config.transformed_data_path  # config.yaml'dan doğru yolu al
+        output_path = self.config.transformed_data_path / filename  # config.yaml'dan doğru yolu al
         df.to_csv(output_path, index=False)
         print(f"Veri başarıyla kaydedildi: {output_path}")
